@@ -7,7 +7,7 @@ dotenv.config();
 const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
-app.use("/img", express.static("img"));
+app.use("/img", express.static("./img"));
 app.use(express.json());
 
 app.get("/api/test", (_, res) => {
