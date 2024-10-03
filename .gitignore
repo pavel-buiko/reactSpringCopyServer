@@ -12,6 +12,7 @@ lerna-debug.log*
 *.config.сjs/
 node_modules/
 dist/
+.github/
 coverage/
 dist-ssr
 *.local
@@ -26,3 +27,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
