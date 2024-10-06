@@ -1,6 +1,7 @@
+require("dotenv").config();
 const apiBaseUrl =
-  process.env.API_BASE_URL ?? "https://server-ancient-grass-9030.fly.dev";
-
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://server-ancient-grass-9030.fly.dev";
 const projectItems = [
   {
     title: "Spring Boot",
@@ -46,4 +47,4 @@ const projectItems = [
   },
 ];
 
-export default projectItems;
+module.exports = projectItems;
