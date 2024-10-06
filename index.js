@@ -1,11 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import projectItems from "./projectItems.cjs";
 import pkg from "pg";
 const { Client } = pkg;
 import bcrypt from "bcrypt";
 import knex from "knex";
+
+dotenv.config();
 
 const postgres = knex({
   client: "pg",
@@ -33,24 +34,11 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-app.get("/api/cards", (req, res) => {
-  const searchTerm = req.query.search.toLocaleLowerCase();
-  const filteredProjects = projectItems.filter((item) => {
-    return item.title
-      .concat(item.description)
-      .toLocaleLowerCase()
-      .includes(searchTerm);
-  });
-
-  res.json(filteredProjects);
-});
-
-app.get("/api/cardsdb", async (req, res) => {
+app.get("/api/cards", async (req, res) => {
   try {
     const searchTerm = req.query.search ? req.query.search.toLowerCase() : "";
 
     let projectsQuery = postgres("projects").select("*");
-    console.log(projectsQuery);
     if (searchTerm) {
       projectsQuery = projectsQuery.where(function () {
         this.whereRaw("LOWER(title) LIKE ?", [`%${searchTerm}%`]).orWhereRaw(
@@ -59,12 +47,10 @@ app.get("/api/cardsdb", async (req, res) => {
         );
       });
     }
-
     const projects = await projectsQuery;
 
     const apiBaseUrl =
-      process.env.REACT_APP_API_BASE_URL ||
-      `https://server-ancient-grass-9030.fly.dev`;
+      process.env.LOCALSERVER ?? `https://server-ancient-grass-9030.fly.dev`;
     const projectsWithImgSrc = projects.map((project) => ({
       ...project,
       imgSrc: `${apiBaseUrl}${project.img_src}`,
