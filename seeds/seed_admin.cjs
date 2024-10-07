@@ -11,7 +11,6 @@ exports.seed = async function (knex) {
     const adminUser = await knex("users").where({ username: "admin" }).first();
     if (!adminUser) {
       await knex("users").insert({
-        id: 1,
         username: "admin",
         firstName: "admin",
         lastName: "adminovich",
