@@ -5,7 +5,7 @@
  */
 module.exports = {
   development: {
-    client: "postgresql",
+    client: "postgres",
     connection: {
       host: "localhost",
       database: "springdb",
@@ -29,9 +29,11 @@ module.exports = {
   staging: {
     client: "postgresql",
     connection: {
-      database: "my_db",
-      user: "username",
-      password: "password",
+      host: "postgres-test.internal",
+      database: "postgres-test",
+      user: "postgres",
+      password: "pFaY1WvGWCDRtIL",
+      port: 5432,
     },
     pool: {
       min: 2,
@@ -39,22 +41,26 @@ module.exports = {
     },
     migrations: {
       tableName: "knex_migrations",
+      directory: "./migrations",
+    },
+    seeds: {
+      directory: "./seeds",
     },
   },
 
   production: {
-    client: "postgresql",
-    connection: {
-      database: "my_db",
-      user: "username",
-      password: "password",
-    },
+    client: "pg",
+    connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
       max: 10,
     },
     migrations: {
       tableName: "knex_migrations",
+      directory: "./migrations",
+    },
+    seeds: {
+      directory: "./seeds",
     },
   },
 };

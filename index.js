@@ -11,7 +11,7 @@ dotenv.config();
 
 const postgres = knex({
   client: "pg",
-  connection: process.env.LOCALDB_URL,
+  connection: process.env.DATABASE_URL,
 });
 
 const port = process.env.PORT || 5000;
@@ -23,6 +23,16 @@ app.use(express.json());
 
 app.get("/api/test", (_, res) => {
   res.json({ message: "Server connected to frontend" });
+});
+
+app.get("/debug/users", async (req, res) => {
+  try {
+    const users = await postgres("users").select("*");
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
@@ -132,7 +142,8 @@ app.get("/api/cards", authenticateToken, async (req, res) => {
     const projects = await projectsQuery;
 
     const apiBaseUrl =
-      process.env.LOCALSERVER ?? `https://server-ancient-grass-9030.fly.dev`;
+      process.env.REACT_APP_API_BASE_URL ??
+      `https://server-ancient-grass-9030.fly.dev`;
     const projectsWithImgSrc = projects.map((project) => ({
       ...project,
       imgSrc: `${apiBaseUrl}${project.img_src}`,
@@ -223,7 +234,7 @@ app.post("/api/signup", async (req, res) => {
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 const client = new Client({
-  connectionString: process.env.LOCALDB_URL,
+  connectionString: process.env.DATABASE_URL,
 });
 
 async function connectToDatabase() {
