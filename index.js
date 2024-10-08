@@ -14,7 +14,6 @@ const postgres = knex({
   connection: process.env.LOCALDB_URL,
 });
 
-const jwtToken = process.env.JWT;
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -25,6 +24,24 @@ app.use(express.json());
 app.get("/api/test", (_, res) => {
   res.json({ message: "Server connected to frontend" });
 });
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+let refreshTokens = [];
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ message: "Token is not provided" });
+
+  jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.status(401).json({ message: "Invalid tokn" });
+    req.user = user;
+    next();
+  });
+}
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -42,23 +59,64 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      {
+    const userPayload = {
+      userId: user.id,
+      username: user.username,
+    };
+
+    const accessToken = jwt.sign(userPayload, ACCESS_TOKEN_SECRET, {
+      expiresIn: "3s",
+    });
+    const refreshToken = jwt.sign(userPayload, REFRESH_TOKEN_SECRET, {
+      expiresIn: "50s",
+    });
+
+    refreshTokens.push(refreshToken);
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+      user: {
         userId: user.id,
         username: user.username,
       },
-      jwtToken,
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({ token });
+    });
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-app.get("/api/cards", async (req, res) => {
+app.post("/api/token", (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken)
+    return res.status(401).json({ message: "Token not provided" });
+  if (!refreshTokens.includes(refreshToken))
+    return res.status(403).json({ message: "Invalid token" });
+
+  jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid Token" });
+
+    const userPayload = {
+      userId: user.userId,
+      username: user.username,
+    };
+
+    const newAccessToken = jwt.sign(userPayload, ACCESS_TOKEN_SECRET, {
+      expiresIn: "30s",
+    });
+
+    res.json({ accessToken: newAccessToken });
+  });
+});
+
+app.post("/api/logout", (req, res) => {
+  const { refreshToken } = req.body;
+  refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+  res.status(200).json({ message: "User quit app" });
+});
+
+app.get("/api/cards", authenticateToken, async (req, res) => {
   try {
     const searchTerm = req.query.search ? req.query.search.toLowerCase() : "";
 
