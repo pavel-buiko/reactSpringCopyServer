@@ -1,12 +1,8 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-
 import authRoutes from "./route/authRoutes.js";
 import projectRoutes from "./route/projectRoutes.js";
 import { authenticateToken } from "./middleware/authMiddleware.js";
-
-dotenv.config();
 
 const app = express();
 

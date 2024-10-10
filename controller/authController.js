@@ -1,14 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import { findUserByUsername, createUser } from "../model/userModel.js";
-
-dotenv.config();
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
-
-let refreshTokens = [];
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
@@ -39,8 +34,6 @@ export const login = async (req, res) => {
       expiresIn: "2m",
     });
     console.log("Generated Refresh Token:", refreshToken);
-    refreshTokens.push(refreshToken);
-    console.log("Current Refresh Tokens:", refreshTokens);
 
     res.status(200).json({
       accessToken,
@@ -60,11 +53,8 @@ export const refreshToken = (req, res) => {
   const { refreshToken } = req.body;
 
   console.log("Received Refresh Token for Refresh:", refreshToken);
-  console.log("Valid Refresh Tokens:", refreshTokens.includes(refreshToken));
   if (!refreshToken)
     return res.status(401).json({ message: "Token not provided" });
-  if (!refreshTokens.includes(refreshToken))
-    return res.status(403).json({ message: "Invalid token" });
 
   jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
@@ -83,8 +73,6 @@ export const refreshToken = (req, res) => {
 };
 
 export const logout = (req, res) => {
-  const { refreshToken } = req.body;
-  refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
   res.status(200).json({ message: "Successfully logged out" });
 };
 

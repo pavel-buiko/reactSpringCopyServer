@@ -1,7 +1,4 @@
-import dotenv from "dotenv";
 import { getProjects } from "../model/projectModel.js";
-
-dotenv.config();
 
 export const getCards = async (req, res) => {
   try {

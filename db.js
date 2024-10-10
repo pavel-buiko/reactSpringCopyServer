@@ -1,7 +1,4 @@
 import knex from "knex";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const postgres = knex({
   client: "pg",
