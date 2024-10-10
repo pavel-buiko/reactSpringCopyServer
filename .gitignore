@@ -12,11 +12,12 @@ lerna-debug.log*
 *.config.сjs/
 node_modules/
 dist/
-.github/
 coverage/
 dist-ssr
 *.local
-
+postgresdata.md
+.env
+knexfile.cjs
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
