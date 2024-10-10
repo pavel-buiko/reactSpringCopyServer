@@ -1,7 +1,6 @@
+import "dotenv/config";
 import app from "./app.js";
 import postgres from "./db.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 const port = process.env.PORT ?? 5000;
 
