@@ -17,13 +17,13 @@ export const login = async (req, res) => {
     const user = await findUserByUsername(username);
 
     if (!user) {
-      return res.status(401).json({ message: "Неверные учетные данные" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Неверные учетные данные" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const userPayload = {
@@ -51,7 +51,8 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка входа:", error);
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -61,12 +62,12 @@ export const refreshToken = (req, res) => {
   console.log("Received Refresh Token for Refresh:", refreshToken);
   console.log("Valid Refresh Tokens:", refreshTokens.includes(refreshToken));
   if (!refreshToken)
-    return res.status(401).json({ message: "Токен не предоставлен" });
+    return res.status(401).json({ message: "Token not provided" });
   if (!refreshTokens.includes(refreshToken))
-    return res.status(403).json({ message: "Недействительный токен" });
+    return res.status(403).json({ message: "Invalid token" });
 
   jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Недействительный токен" });
+    if (err) return res.status(403).json({ message: "Invalid token" });
 
     const userPayload = {
       userId: user.userId,
@@ -84,7 +85,7 @@ export const refreshToken = (req, res) => {
 export const logout = (req, res) => {
   const { refreshToken } = req.body;
   refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
-  res.status(200).json({ message: "Выход из системы выполнен" });
+  res.status(200).json({ message: "Successfully logged out" });
 };
 
 export const signup = async (req, res) => {
@@ -96,7 +97,7 @@ export const signup = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ errors: { username: "Имя пользователя уже занято." } });
+        .json({ errors: { username: "Username is already taken." } });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -109,9 +110,9 @@ export const signup = async (req, res) => {
       age,
     });
 
-    res.status(201).json({ message: "Регистрация прошла успешно" });
+    res.status(201).json({ message: "Registration successful" });
   } catch (error) {
-    console.error("Ошибка во время регистрации:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

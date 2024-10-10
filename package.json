@@ -14,8 +14,7 @@
   },
   "scripts": {
     "server": "nodemon server.js",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.9",

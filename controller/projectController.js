@@ -1,4 +1,3 @@
-// controller/projectController.js
 import dotenv from "dotenv";
 import { getProjects } from "../model/projectModel.js";
 
@@ -8,9 +7,7 @@ export const getCards = async (req, res) => {
   try {
     const userId = req.user.userId;
     const username = req.user.username;
-    console.log(
-      `Пользователь ${username} (ID: ${userId}) запрашивает карточки.`
-    );
+    console.log(`User ${username} (ID: ${userId}) is requesting cards.`);
 
     const searchTerm = req.query.search ? req.query.search.toLowerCase() : "";
 

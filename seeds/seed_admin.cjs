@@ -1,10 +1,6 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 
-exports.seed = async function (knex) {
+export async function seed(knex) {
   try {
     const adminPasswordHash = await bcrypt.hash("1234", 12);
 
@@ -24,4 +20,4 @@ exports.seed = async function (knex) {
   } catch (err) {
     console.log("The error: ", err);
   }
-};
+}
