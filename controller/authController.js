@@ -72,10 +72,6 @@ export const refreshToken = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
-  res.status(200).json({ message: "Successfully logged out" });
-};
-
 export const signup = async (req, res) => {
   const { firstName, lastName, username, password, age } = req.body;
 
