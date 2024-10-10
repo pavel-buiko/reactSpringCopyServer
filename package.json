@@ -13,9 +13,13 @@
     "pg": "^8.13.0"
   },
   "scripts": {
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.5.9"
+    "@flydotio/dockerfile": "^0.5.9",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

@@ -5,14 +5,8 @@
  */
 module.exports = {
   development: {
-    client: "postgres",
-    connection: {
-      host: "localhost",
-      database: "springdb",
-      user: "postgres",
-      password: "1111",
-      port: 5432,
-    },
+    client: "pg",
+    connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
       max: 10,
