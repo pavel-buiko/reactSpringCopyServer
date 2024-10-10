@@ -17,7 +17,7 @@ dist-ssr
 *.local
 postgresdata.md
 .env
-knexfile.cjs/
+knexfile.cjs
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
